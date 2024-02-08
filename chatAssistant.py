@@ -58,6 +58,8 @@ api_key = st.secrets.OpenAIAPI.openai_api_key
 if api_key:
     openai.api_key = api_key
 
+st.sidebar.write("<a href='https://www.google.com.br/' id='baixarArquivo'>Baixe o arquivo para fazer a análise</a>", unsafe_allow_html=True)
+
 uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 
 if st.sidebar.button("Enviar arquivo"):
@@ -120,7 +122,7 @@ def process_message_with_citations(message):
     return full_response
 
 # Interface do chat
-st.subheader("Análise de Coeficiente de Aprovação via ChatGPT")
+st.subheader("Análise de Pedidos")
 #st.write("Este chat usa a API da OpenAI para gerar respostas.")
 
 # Só vai mostrar o chat se for iniciado
