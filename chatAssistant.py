@@ -159,7 +159,7 @@ if st.session_state.start_chat:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    prompt_ =  st.chat_input("Faça uma pergunta!")
+    prompt_ =  st.chat_input("Faça uma pergunta!" )
 
     if pergunta_ :
         prompt = pergunta_
