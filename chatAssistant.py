@@ -47,8 +47,11 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Quantos pedidos ocorreram este mês?",
-    "Valor de todos os pedidos deste mês?",
+    "Sugestão de pergunta 1",
+    "Sugestão de pergunta 2",
+    "Sugestão de pergunta 3",
+    "Sugestão de pergunta 4",
+    "Sugestão de pergunta 5",
 ]
 
 pergunta_ = ""
