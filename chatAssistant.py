@@ -45,6 +45,16 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
     pdf.save()
 
+
+perguntas = [
+    "Sugestão de pergunta 1",
+    "Sugestão de pergunta 2",
+    "Sugestão de pergunta 3",
+]
+
+pergunta_ = ""
+
+
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
     with open(filepath, "rb") as file:
@@ -97,6 +107,17 @@ if st.sidebar.button("Iniciar chat"):
     else:
         st.sidebar.warning("Por favor, selecione pelo menos um arquivo para iniciar o chat")
 
+
+if st.session_state.start_chat:
+    on = st.sidebar.toggle('Ver sugestões de perguntas')
+
+    if on:
+        for indice, pergunta in enumerate(perguntas):
+            # st.sidebar.write(f"<a style=\"color:white;display:flex;align-items:center;gap:26px;text-decoration:none\" target=\"_self\" id=\"pergunta{indice}\" href=\"javascript:(function(){{var conteudo = document.getElementById('pergunta{indice}').innerText; navigator.clipboard.writeText(conteudo).then(function() {{ console.log('Conteúdo copiado para a área de transferência: ' + conteudo); }}, function(err) {{ console.error('Erro ao copiar conteúdo: ', err); }});}})()\">{pergunta}<span>{icon_copy}</span></a>", unsafe_allow_html=True)
+            if st.sidebar.button(f"{pergunta}"):
+                pergunta_ = pergunta
+
+    st.sidebar.write('<style>label[data-baseweb="checkbox"] > div > div {background: #282828}</style>', unsafe_allow_html=True)
 # Define a função para iniciar
 def process_message_with_citations(message):
     """Extract content and annotations from the message and format citations as footnotes."""
@@ -138,8 +159,16 @@ if st.session_state.start_chat:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+    prompt_ =  st.chat_input("Faça uma pergunta!")
+
+    if pergunta_ :
+        prompt = pergunta_
+
+    if not pergunta_ :
+        prompt = prompt_
+
     # Campo pro usuário escrever
-    if prompt := st.chat_input("Faça uma pergunta!"):
+    if prompt:
         # Adiciona as mensagens do usuário e mostra no chat
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
