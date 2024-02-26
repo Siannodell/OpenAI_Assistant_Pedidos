@@ -50,8 +50,6 @@ perguntas = [
     "Sugestão de pergunta 1",
     "Sugestão de pergunta 2",
     "Sugestão de pergunta 3",
-    "Sugestão de pergunta 4",
-    "Sugestão de pergunta 5",
 ]
 
 pergunta_ = ""
