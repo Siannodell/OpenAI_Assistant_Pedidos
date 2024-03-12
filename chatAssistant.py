@@ -106,9 +106,7 @@ if st.sidebar.button("Iniciar"):
     # Mostra os ids
     if st.session_state.file_id_list:
         st.sidebar.write("IDs dos arquivos enviados:")
-        file_id_d = ""
         for file_id in st.session_state.file_id_list:
-            file_id_d = file_id
             st.sidebar.write(file_id)
             # Associa os arquivos ao assistente
             assistant_file = client.beta.assistants.files.create(
@@ -117,7 +115,7 @@ if st.sidebar.button("Iniciar"):
             )
         ds = client.beta.assistants.files.list(assistant_id=assistant_id)
         for file in ds:
-            if file_id_d != file.id:
+            if file.id != st.session_state.file_id_list[0]:
                 client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     # Verifica se o arquivo foi upado antes de iniciar
