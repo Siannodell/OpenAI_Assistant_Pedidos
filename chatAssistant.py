@@ -12,7 +12,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
 import urllib
-
+import pandas as pd
 
 load_dotenv()
 #id do assistente
@@ -33,6 +33,16 @@ if "thread_id" not in st.session_state:
 
 # titulo e icone da página
 # Função para converter XLSX pra PDF
+
+def convert_xlsx_to_csv(input_path, output_path) :
+    # Read and store content
+    # of an excel file
+    read_file = pd.read_excel(input_path)
+
+    # Write the dataframe object
+    # into csv file
+    read_file.to_csv(output_path)
+
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
     sheets = workbook.sheetnames
@@ -83,7 +93,7 @@ if st.sidebar.button("Iniciar chat"):
     if uploaded_file:
         # Converter XLSX para PDF
         pdf_output_path = "converted_file.pdf"
-        convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
+        convert_xlsx_to_csv(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(pdf_output_path)
