@@ -30,12 +30,13 @@ if "start_chat" not in st.session_state:
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = None
 
+def download_file(file) :
+    file = urllib.request.urlopen(file).read()
+    return BytesIO(file)
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 def convert_xlsx_to_pdf(input_path, output_path):
-    file = urllib.request.urlopen(input_path).read()
-
-    workbook = load_workbook(filename = BytesIO(file))
+    workbook = load_workbook(input_path)
     sheets = workbook.sheetnames
 
     pdf = canvas.Canvas(output_path, pagesize=letter)
@@ -75,7 +76,7 @@ if api_key:
 st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
-uploaded_file = "https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx"
+uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 
 if st.sidebar.button("Enviar arquivo"):
     if uploaded_file:
