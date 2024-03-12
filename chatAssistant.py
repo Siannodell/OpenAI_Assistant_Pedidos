@@ -82,13 +82,11 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 pdf_output_path = "converted_file.pdf"
 convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
 
-if st.sidebar.button("Enviar arquivo"):
-    if pdf_output_path:
-        # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(pdf_output_path)
-        
-        st.session_state.file_id_list.append(additional_file_id)
-        st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+# Enviar o arquivo convertido
+additional_file_id = upload_to_openai(pdf_output_path)
+
+st.session_state.file_id_list.append(additional_file_id)
+st.sidebar.write(f"ID do arquivo: {additional_file_id}")
         
 # Mostra os ids
 if st.session_state.file_id_list:
