@@ -70,8 +70,8 @@ if api_key:
 
 st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
-uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
-#uploaded_file = "https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx";
+#uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
+uploaded_file = "https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx"
 if st.sidebar.button("Enviar arquivo"):
     if uploaded_file:
         # Converter XLSX para PDF
