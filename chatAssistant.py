@@ -103,8 +103,7 @@ if st.sidebar.button("Iniciar"):
 
     ds = client.beta.assistants.files.list(assistant_id=assistant_id)
     for file in ds:
-        if file.id != st.session_state.file_id_list[0]:
-            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     # Mostra os ids
     if st.session_state.file_id_list:
