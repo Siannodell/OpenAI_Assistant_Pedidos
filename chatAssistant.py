@@ -1,6 +1,8 @@
 import openai
 import streamlit as st
 from bs4 import BeautifulSoup
+from streamlit.components.v1 import html
+
 import requests
 import pdfkit
 import time
@@ -9,6 +11,8 @@ from dotenv import load_dotenv
 from openpyxl import load_workbook
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from io import BytesIO
+import urllib
 
 
 load_dotenv()
@@ -54,6 +58,9 @@ perguntas = [
 
 pergunta_ = ""
 
+def download_file(file) :
+    file = urllib.request.urlopen(file).read()
+    return BytesIO(file)
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
@@ -70,9 +77,10 @@ if api_key:
 
 st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
-uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-
-if st.sidebar.button("Enviar arquivo"):
+#uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
+uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
+# Botão para iniciar o chat
+if st.sidebar.button("Iniciar chat"):
     if uploaded_file:
         # Converter XLSX para PDF
         pdf_output_path = "converted_file.pdf"
@@ -83,20 +91,18 @@ if st.sidebar.button("Enviar arquivo"):
 
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
-        
-# Mostra os ids
-if st.session_state.file_id_list:
-    st.sidebar.write("IDs dos arquivos enviados:")
-    for file_id in st.session_state.file_id_list:
-        st.sidebar.write(file_id)
-        # Associa os arquivos ao assistente
-        assistant_file = client.beta.assistants.files.create(
-            assistant_id=assistant_id, 
-            file_id=file_id
-        )
 
-# Botão para iniciar o chat
-if st.sidebar.button("Iniciar chat"):
+    # Mostra os ids
+    if st.session_state.file_id_list:
+        st.sidebar.write("IDs dos arquivos enviados:")
+        for file_id in st.session_state.file_id_list:
+            st.sidebar.write(file_id)
+            # Associa os arquivos ao assistente
+            assistant_file = client.beta.assistants.files.create(
+                assistant_id=assistant_id,
+                file_id=file_id
+            )
+
     # Verifica se o arquivo foi upado antes de iniciar
     if st.session_state.file_id_list:
         st.session_state.start_chat = True
