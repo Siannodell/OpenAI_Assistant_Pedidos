@@ -101,7 +101,10 @@ if st.sidebar.button("Iniciar"):
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
-
+    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    for file in ds:
+        if file.id != st.session_state.file_id_list[0]:
+            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     # Mostra os ids
     if st.session_state.file_id_list:
@@ -113,10 +116,7 @@ if st.sidebar.button("Iniciar"):
                 assistant_id=assistant_id,
                 file_id=file_id
             )
-        ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-        for file in ds:
-            if file.id != st.session_state.file_id_list[0]:
-                client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+
 
     # Verifica se o arquivo foi upado antes de iniciar
     if st.session_state.file_id_list:
