@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from openpyxl import load_workbook
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from io import BytesIO
+import urllib
 
 
 load_dotenv()
@@ -31,7 +33,9 @@ if "thread_id" not in st.session_state:
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 def convert_xlsx_to_pdf(input_path, output_path):
-    workbook = load_workbook(input_path)
+    file = urllib.request.urlopen(input_path).read()
+
+    workbook = load_workbook(filename = BytesIO(file))
     sheets = workbook.sheetnames
 
     pdf = canvas.Canvas(output_path, pagesize=letter)
@@ -72,6 +76,7 @@ st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
 uploaded_file = "https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx"
+
 if st.sidebar.button("Enviar arquivo"):
     if uploaded_file:
         # Converter XLSX para PDF
