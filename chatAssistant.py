@@ -41,7 +41,7 @@ def convert_xlsx_to_json(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_html(output_path)
+    read_file.to_json(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -92,7 +92,7 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 if st.sidebar.button("Iniciar chat"):
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.html"
+        pdf_output_path = "converted_file.json"
         convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
