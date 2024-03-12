@@ -92,7 +92,7 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 if st.sidebar.button("Iniciar chat"):
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.pdf"
+        pdf_output_path = "converted_file.csv"
         convert_xlsx_to_csv(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
