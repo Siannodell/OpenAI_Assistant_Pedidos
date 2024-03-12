@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 from openpyxl import load_workbook
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from io import BytesIO
-import urllib
 
 
 load_dotenv()
@@ -30,9 +28,6 @@ if "start_chat" not in st.session_state:
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = None
 
-def download_file(file) :
-    file = requests.get(file)
-    return BytesIO(file.content)
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 def convert_xlsx_to_pdf(input_path, output_path):
@@ -75,18 +70,19 @@ if api_key:
 
 st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
-#uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
-uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
+uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 
-# Converter XLSX para PDF
-pdf_output_path = "converted_file.pdf"
-convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
+if st.sidebar.button("Enviar arquivo"):
+    if uploaded_file:
+        # Converter XLSX para PDF
+        pdf_output_path = "converted_file.pdf"
+        convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
 
-# Enviar o arquivo convertido
-additional_file_id = upload_to_openai(pdf_output_path)
+        # Enviar o arquivo convertido
+        additional_file_id = upload_to_openai(pdf_output_path)
 
-st.session_state.file_id_list.append(additional_file_id)
-st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        st.session_state.file_id_list.append(additional_file_id)
+        st.sidebar.write(f"ID do arquivo: {additional_file_id}")
         
 # Mostra os ids
 if st.session_state.file_id_list:
