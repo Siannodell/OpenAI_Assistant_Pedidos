@@ -89,7 +89,7 @@ if api_key:
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 # Botão para iniciar o chat
-if st.sidebar.button("Iniciar chat"):
+if st.sidebar.button("Iniciar"):
     if uploaded_file:
         # Converter XLSX para PDF
         pdf_output_path = "converted_file.md"
