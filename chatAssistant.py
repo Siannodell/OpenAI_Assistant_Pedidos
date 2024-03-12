@@ -32,7 +32,7 @@ if "thread_id" not in st.session_state:
 
 def download_file(file) :
     file = urllib.request.urlopen(file).read()
-    return file
+    return BytesIO(file)
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 def convert_xlsx_to_pdf(input_path, output_path):
@@ -78,12 +78,12 @@ st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 
-if st.sidebar.button("Enviar arquivo"):
-    if uploaded_file:
-        # Converter XLSX para PDF
-        pdf_output_path = "converted_file.pdf"
-        convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
+# Converter XLSX para PDF
+pdf_output_path = "converted_file.pdf"
+convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
 
+if st.sidebar.button("Enviar arquivo"):
+    if pdf_output_path:
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(pdf_output_path)
         
