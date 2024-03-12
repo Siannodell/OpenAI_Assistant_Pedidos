@@ -101,6 +101,11 @@ if st.sidebar.button("Iniciar"):
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
+    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+
+    for file in ds:
+        client.beta.assistants.files.delete(assistant_id=assistant_id,file_id=file.id)
+
     # Mostra os ids
     if st.session_state.file_id_list:
         st.sidebar.write("IDs dos arquivos enviados:")
@@ -218,7 +223,7 @@ if st.session_state.start_chat:
 
         # Processa e mostra as mensagens do assistente
         assistant_messages_for_run = [
-            message for message in messages 
+            message for message in messages
             if message.run_id == run.id and message.role == "assistant"
         ]
         for message in assistant_messages_for_run[::-1]:
