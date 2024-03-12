@@ -32,7 +32,7 @@ if "thread_id" not in st.session_state:
 
 def download_file(file) :
     file = requests.get(file)
-    return file.content
+    return BytesIO(file.content)
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 def convert_xlsx_to_pdf(input_path, output_path):
