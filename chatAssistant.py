@@ -102,9 +102,9 @@ if st.sidebar.button("Iniciar"):
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
     ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-
-    for file in ds:
-        client.beta.assistants.files.delete(assistant_id=assistant_id,file_id=file.id)
+    if len(ds) > 2:
+        for file in ds:
+            client.beta.assistants.files.delete(assistant_id=assistant_id,file_id=file.id)
 
     # Mostra os ids
     if st.session_state.file_id_list:
