@@ -60,9 +60,14 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Sugestão de pergunta 1",
-    "Sugestão de pergunta 2",
-    "Sugestão de pergunta 3",
+    "Qual é a quantidade média de itens por pedido aprovado e não aprovado?",
+    "Qual é o valor médio dos pedidos recebidos, aprovados e não aprovados?",
+    "Existe alguma diferença significativa no ticket médio dos pedidos aprovados e não aprovados?",
+    "Qual foi o mês com o maior número de pedidos aprovados?",
+    "Em qual faixa etária houve a maior quantidade de pedidos recebidos?",
+    "Qual é a forma de pagamento mais comum para os pedidos aprovados?",
+    "Qual é a cidade com o maior valor total de pedidos aprovados?",
+    "Qual é a bandeira mais frequente nos pedidos não aprovados?",
 ]
 
 pergunta_ = ""
