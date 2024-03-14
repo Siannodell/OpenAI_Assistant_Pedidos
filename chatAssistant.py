@@ -34,14 +34,14 @@ if "thread_id" not in st.session_state:
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 
-def convert_xlsx_to_json(input_path, output_path) :
+def convert_xlsx_to_md(input_path, output_path) :
     # Read and store content
     # of an excel file
     read_file = pd.read_excel(input_path)
 
     # Write the dataframe object
     # into csv file
-    read_file.to_json(output_path)
+    read_file.to_md(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -98,13 +98,13 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
     ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-    #for file in ds:
-        #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+    for file in ds:
+        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.pdf"
-        convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
+        pdf_output_path = "converted_file.md"
+        convert_xlsx_to_md(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(pdf_output_path)
