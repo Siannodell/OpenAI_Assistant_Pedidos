@@ -98,7 +98,7 @@ if st.sidebar.button("Iniciar"):
         for file in ds:
             client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.md"
+        pdf_output_path = "converted_file.xls"
         convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
