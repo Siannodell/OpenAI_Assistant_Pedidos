@@ -34,14 +34,14 @@ if "thread_id" not in st.session_state:
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 
-def convert_xlsx_to_md(input_path, output_path) :
+def convert_xlsx_to_json(input_path, output_path) :
     # Read and store content
     # of an excel file
     read_file = pd.read_excel(input_path)
 
     # Write the dataframe object
     # into csv file
-    read_file.to_md(output_path)
+    read_file.to_markdown(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -60,14 +60,9 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Qual é a quantidade média de itens por pedido aprovado e não aprovado?",
-    "Qual é o valor médio dos pedidos recebidos, aprovados e não aprovados?",
-    "Existe alguma diferença significativa no ticket médio dos pedidos aprovados e não aprovados?",
-    "Qual foi o mês com o maior número de pedidos aprovados?",
-    "Em qual faixa etária houve a maior quantidade de pedidos recebidos?",
-    "Qual é a forma de pagamento mais comum para os pedidos aprovados?",
-    "Qual é a cidade com o maior valor total de pedidos aprovados?",
-    "Qual é a bandeira mais frequente nos pedidos não aprovados?",
+    "Sugestão de pergunta 1",
+    "Sugestão de pergunta 2",
+    "Sugestão de pergunta 3",
 ]
 
 pergunta_ = ""
@@ -92,19 +87,13 @@ if api_key:
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
-
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
-    #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-    #for file in ds:
-        #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
-
     if uploaded_file:
         # Converter XLSX para PDF
         pdf_output_path = "converted_file.md"
-        convert_xlsx_to_md(uploaded_file, pdf_output_path)
+        convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(pdf_output_path)
@@ -112,17 +101,16 @@ if st.sidebar.button("Iniciar"):
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
-
+    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    for file in ds:
+        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     # Mostra os ids
     if st.session_state.file_id_list:
         st.sidebar.write("IDs dos arquivos enviados:")
-
         for file_id in st.session_state.file_id_list:
-
             st.sidebar.write(file_id)
             # Associa os arquivos ao assistente
-
             assistant_file = client.beta.assistants.files.create(
                 assistant_id=assistant_id,
                 file_id=file_id
@@ -182,7 +170,7 @@ st.subheader("ANÁLISE DE PEDIDOS")
 if st.session_state.start_chat:
     # Inicializa o modelo usado
     if "openai_model" not in st.session_state:
-        st.session_state.openai_model = "gpt-4"
+        st.session_state.openai_model = "gpt-4-1106-preview"
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
