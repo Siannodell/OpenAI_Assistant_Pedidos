@@ -41,7 +41,7 @@ def convert_xlsx_to_markdown(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_excel(output_path)
+    read_file.to_csv(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
