@@ -91,9 +91,9 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
     if uploaded_file:
-        ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-        for file in ds:
-            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+        #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+        #for file in ds:
+            #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
         # Converter XLSX para PDF
         pdf_output_path = "converted_file.md"
         convert_xlsx_to_json(uploaded_file, pdf_output_path)
