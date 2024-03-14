@@ -91,13 +91,12 @@ if api_key:
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
-    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-    for file in ds:
-        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+    #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    #for file in ds:
+        #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
     if uploaded_file:
-
         # Converter XLSX para PDF
         #pdf_output_path = "converted_file.xls"
         #convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
