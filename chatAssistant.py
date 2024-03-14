@@ -41,7 +41,7 @@ def convert_xlsx_to_json(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_markdown(output_path)
+    read_file.to_json(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -60,9 +60,12 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Sugestão de pergunta 1",
-    "Sugestão de pergunta 2",
-    "Sugestão de pergunta 3",
+    "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
+    "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
+    "Qual foi o ticket médio dos pedidos aprovados comparado com os pedidos não aprovados? Isso pode indicar alguma tendência ou comportamento específico dos consumidores?",
+    "Qual é a taxa de aprovação dos pedidos recebidos e como ela se distribui entre as diferentes cidades ou estados?",
+    "A localização impacta o valor médio dos pedidos ou a preferência por formas de pagamento?",
+    "Comparando os dados de agosto de 2023 com meses anteriores, existe alguma tendência de crescimento ou decréscimo nas transações?",
 ]
 
 pergunta_ = ""
