@@ -41,7 +41,7 @@ def convert_xlsx_to_json(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_markdown(output_path)
+    read_file.to_(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -69,7 +69,7 @@ pergunta_ = ""
 
 def download_file(file) :
     file = urllib.request.urlopen(file).read()
-    return BytesIO(file)
+    return file
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
@@ -91,7 +91,7 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 if st.sidebar.button("Enviar pedidos em CSV"):
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.md"
+        #pdf_output_path = "converted_file.md"
         #convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
