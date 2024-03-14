@@ -69,7 +69,7 @@ pergunta_ = ""
 
 def download_file(file) :
     file = urllib.request.urlopen(file).read()
-    return BytesIO(file)
+    return file
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
