@@ -171,7 +171,7 @@ st.subheader("ANÁLISE DE PEDIDOS")
 if st.session_state.start_chat:
     # Inicializa o modelo usado
     if "openai_model" not in st.session_state:
-        st.session_state.openai_model = "gpt-4-turbo-preview"
+        st.session_state.openai_model = "gpt-4"
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
