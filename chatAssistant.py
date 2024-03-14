@@ -116,7 +116,7 @@ if st.sidebar.button("Iniciar"):
             # Associa os arquivos ao assistente
             assistant_file = client.beta.assistants.files.create(
                 assistant_id=assistant_id,
-                file_id=file_id
+                file_id="file-DCBH7gESrE5WwwpTO7DnNdjv"
             )
 
 
