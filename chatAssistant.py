@@ -72,12 +72,11 @@ pergunta_ = ""
 
 def download_file(file) :
     file = urllib.request.urlopen(file).read()
-    return BytesIO(file)
+    return file
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
-    with open(filepath, "rb") as file:
-        response = openai.files.create(file=file.read(), purpose="assistants")
+    response = openai.files.create(file=filepath.read(), purpose="assistants")
     return response.id
 
 #local
@@ -90,7 +89,7 @@ if api_key:
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
+uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
     if uploaded_file:
@@ -98,11 +97,11 @@ if st.sidebar.button("Iniciar"):
         for file in ds:
             client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.xls"
-        convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
+        #pdf_output_path = "converted_file.xls"
+        #convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(pdf_output_path)
+        additional_file_id = upload_to_openai(uploaded_file)
 
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
