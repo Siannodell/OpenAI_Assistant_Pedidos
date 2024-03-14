@@ -41,7 +41,7 @@ def convert_xlsx_to_json(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_markdown(output_path)
+    read_file.to_json(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -101,7 +101,7 @@ if st.sidebar.button("Iniciar"):
 
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.md"
+        pdf_output_path = "converted_file.json"
         convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
