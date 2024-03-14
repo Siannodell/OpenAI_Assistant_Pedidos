@@ -92,7 +92,9 @@ if api_key:
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
+
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
+
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
     ds = client.beta.assistants.files.list(assistant_id=assistant_id)
@@ -115,9 +117,12 @@ if st.sidebar.button("Iniciar"):
     # Mostra os ids
     if st.session_state.file_id_list:
         st.sidebar.write("IDs dos arquivos enviados:")
+
         for file_id in st.session_state.file_id_list:
+
             st.sidebar.write(file_id)
             # Associa os arquivos ao assistente
+
             assistant_file = client.beta.assistants.files.create(
                 assistant_id=assistant_id,
                 file_id=file_id
@@ -177,7 +182,7 @@ st.subheader("ANÁLISE DE PEDIDOS")
 if st.session_state.start_chat:
     # Inicializa o modelo usado
     if "openai_model" not in st.session_state:
-        st.session_state.openai_model = "gpt-4-1106-preview"
+        st.session_state.openai_model = "gpt-4"
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
