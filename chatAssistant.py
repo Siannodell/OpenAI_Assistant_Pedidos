@@ -73,8 +73,7 @@ def download_file(file) :
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
-    with open(filepath, "rb") as file:
-        response = openai.files.create(file=file, purpose="assistants")
+    response = openai.files.create(file=file, purpose="assistants")
     return response.id
 
 #local
