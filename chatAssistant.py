@@ -37,7 +37,7 @@ if "thread_id" not in st.session_state:
 def convert_xlsx_to_markdown(input_path, output_path) :
     # Read and store content
     # of an excel file
-    read_file = pd.read_excel(input_path)
+    read_file = pd.read_csv(input_path)
 
     # Write the dataframe object
     # into csv file
@@ -89,13 +89,15 @@ if api_key:
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
+    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    for file in ds:
+        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+
+    uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
     if uploaded_file:
-        #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-        #for file in ds:
-            #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+
         # Converter XLSX para PDF
         #pdf_output_path = "converted_file.xls"
         #convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
@@ -106,8 +108,6 @@ if st.sidebar.button("Iniciar"):
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
-
-
     # Mostra os ids
     if st.session_state.file_id_list:
         st.sidebar.write("IDs dos arquivos enviados:")
@@ -116,7 +116,7 @@ if st.sidebar.button("Iniciar"):
             # Associa os arquivos ao assistente
             assistant_file = client.beta.assistants.files.create(
                 assistant_id=assistant_id,
-                file_id="file-DCBH7gESrE5WwwpTO7DnNdjv"
+                file_id=file_id
             )
 
 
