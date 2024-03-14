@@ -90,6 +90,10 @@ if api_key:
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
+    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    for file in ds:
+        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+
     if uploaded_file:
         # Converter XLSX para PDF
         pdf_output_path = "converted_file.md"
@@ -101,9 +105,7 @@ if st.sidebar.button("Iniciar"):
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
-    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-    for file in ds:
-        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+
 
     # Mostra os ids
     if st.session_state.file_id_list:
