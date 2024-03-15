@@ -98,9 +98,8 @@ if st.sidebar.button("Iniciar"):
     uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
     if uploaded_file:
         # Converter XLSX para PDF
-        #pdf_output_path = "converted_file.xls"
-        #convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
-
+        pdf_output_path = "converted_file.xls"
+        convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(uploaded_file)
 
@@ -112,6 +111,8 @@ if st.sidebar.button("Iniciar"):
         st.sidebar.write("IDs dos arquivos enviados:")
         for file_id in st.session_state.file_id_list:
             st.sidebar.write(file_id)
+
+
             # Associa os arquivos ao assistente
             assistant_file = client.beta.assistants.files.create(
                 assistant_id=assistant_id,
