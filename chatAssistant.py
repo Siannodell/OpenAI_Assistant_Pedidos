@@ -41,7 +41,7 @@ def convert_xlsx_to_json(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_markdown(output_path)
+    read_file.to_json(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -76,7 +76,8 @@ def download_file(file) :
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
-    response = openai.files.create(file=filepath.read(), purpose="assistants")
+    with open(filepath, "rb") as file:
+        response = openai.files.create(file=file.read(), purpose="assistants")
     return response.id
 
 #local
@@ -94,18 +95,14 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 if st.sidebar.button("Iniciar"):
     if uploaded_file:
         # Converter XLSX para PDF
-        #pdf_output_path = "converted_file.md"
-        #convert_xlsx_to_json(uploaded_file, pdf_output_path)
+        pdf_output_path = "converted_file.json"
+        convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(uploaded_file)
+        additional_file_id = upload_to_openai(pdf_output_path)
 
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
-
-    #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-    #for file in ds:
-        #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     # Mostra os ids
     if st.session_state.file_id_list:
