@@ -102,7 +102,7 @@ if st.sidebar.button("Iniciar"):
         convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(uploaded_file)
+        additional_file_id = upload_to_openai(pdf_output_path)
 
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
