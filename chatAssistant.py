@@ -76,13 +76,13 @@ def download_file(file) :
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
-    response = openai.files.create(file=file.read(), purpose="assistants")
+    response = openai.files.create(file=filepath.read(), purpose="assistants")
     return response.id
 
 #local
-#api_key = "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"
+api_key = "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"
 #git
-api_key = st.secrets.OpenAIAPI.openai_api_key
+#api_key = st.secrets.OpenAIAPI.openai_api_key
 if api_key:
     openai.api_key = api_key
 
