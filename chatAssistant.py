@@ -1,3 +1,5 @@
+import io
+
 import openai
 import streamlit as st
 from bs4 import BeautifulSoup
@@ -69,9 +71,12 @@ perguntas = [
 
 pergunta_ = ""
 
-def download_file(file) :
-    file = urllib.request.urlopen(file)
-    return file
+def download_csv(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.content
+    else:
+        return None
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
@@ -86,27 +91,33 @@ api_key = st.secrets.OpenAIAPI.openai_api_key
 if api_key:
     openai.api_key = api_key
 
-#st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
+# URL do arquivo CSV
+csv_url = "https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv"
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
+    csv_content = download_csv(csv_url)
 
-    if not st.session_state.file_id_list:
-        ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-        for file in ds:
-            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+    # Verifica se o download foi bem sucedido
+    if csv_content:
+        # Lê o arquivo CSV
+        df = pd.read_csv(io.BytesIO(csv_content))
 
-    uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
-    if uploaded_file:
-        # Converter XLSX para PDF
-        pdf_output_path = "converted_file.xls"
-        convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
-        # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(pdf_output_path)
+        # Mostra o conteúdo do DataFrame
+        st.write("Conteúdo do arquivo CSV:")
+        st.write(df)
 
-        st.session_state.file_id_list.append(additional_file_id)
-        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        # Inicializa a sessão e associa o arquivo ao assistente
+        session = openai.Session.create(assistant_id=assistant_id)
+        response = session.messages.create(assistant_id=assistant_id, content={"file": csv_content})
+
+        # Mostra as respostas do assistente
+        st.write("Respostas do assistente:")
+        for message in response.messages:
+            st.write(message["content"])
+    else:
+        st.error("Erro ao fazer o download do arquivo CSV.")
 
     # Mostra os ids
     if st.session_state.file_id_list:
