@@ -211,7 +211,7 @@ if st.session_state.start_chat:
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
-        while run.status != 'completed':
+        while run.status != 'in_progress':
             time.sleep(1)
             run = client.beta.threads.runs.retrieve(
                 thread_id=st.session_state.thread_id,
