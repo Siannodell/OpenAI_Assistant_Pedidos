@@ -38,7 +38,7 @@ if "thread_id" not in st.session_state:
 def convert_xlsx_to_json(input_path, output_path) :
     read_file = pd.read_csv(input_path)
 
-    read_file.to_json(output_path)
+    read_file.to_markdown(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
