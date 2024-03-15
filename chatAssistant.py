@@ -93,6 +93,9 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 
 if not st.session_state.start_chat:
     if st.sidebar.button("Iniciar análise"):
+        ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+        for file in ds:
+            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
         if uploaded_file:
             # Converter XLSX para PDF
             pdf_output_path = "converted_file.json"
@@ -232,7 +235,7 @@ if st.session_state.start_chat:
             message for message in messages
             if message.run_id == run.id and message.role == "assistant"
         ]
-        for message in assistant_messages_for_run:
+        for message in assistant_messages_for_run[::-1]:
             full_response = process_message_with_citations(message)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             with st.chat_message("assistant"):
