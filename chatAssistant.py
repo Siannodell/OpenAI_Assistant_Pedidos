@@ -60,9 +60,12 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Sugestão de pergunta 1",
-    "Sugestão de pergunta 2",
-    "Sugestão de pergunta 3",
+    "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
+    "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
+    "Qual foi o ticket médio dos pedidos aprovados comparado com os pedidos não aprovados? Isso pode indicar alguma tendência ou comportamento específico dos consumidores?",
+    "Qual é a taxa de aprovação dos pedidos recebidos e como ela se distribui entre as diferentes cidades ou estados?",
+    "A localização impacta o valor médio dos pedidos ou a preferência por formas de pagamento?",
+    "Comparando os dados de agosto de 2023 com meses anteriores, existe alguma tendência de crescimento ou decréscimo nas transações?",
 ]
 
 pergunta_ = ""
@@ -73,14 +76,13 @@ def download_file(file) :
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
-    with open(filepath, "rb") as file:
-        response = openai.files.create(file=file.read(), purpose="assistants")
+    response = openai.files.create(file=file.read(), purpose="assistants")
     return response.id
 
 #local
-#api_key = os.getenv("OPENAI_API_KEY")
+api_key = "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"
 #git
-api_key = st.secrets.OpenAIAPI.openai_api_key
+#api_key = st.secrets.OpenAIAPI.openai_api_key
 if api_key:
     openai.api_key = api_key
 
@@ -92,11 +94,11 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 if st.sidebar.button("Iniciar"):
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.md"
-        convert_xlsx_to_json(uploaded_file, pdf_output_path)
+        #pdf_output_path = "converted_file.md"
+        #convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(pdf_output_path)
+        additional_file_id = upload_to_openai(uploaded_file)
 
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
@@ -198,7 +200,8 @@ if st.session_state.start_chat:
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt
+            content=prompt,
+            file_ids=st.session_state.file_id_list
         )
 
         # Cria a requisição com mais instruções
