@@ -80,9 +80,9 @@ def upload_to_openai(filepath):
 #local
 #api_key = os.getenv("OPENAI_API_KEY")
 #git
-#api_key = st.secrets.OpenAIAPI.openai_api_key
-#if api_key:
-openai.api_key = "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"
+api_key = st.secrets.OpenAIAPI.openai_api_key
+if api_key:
+    openai.api_key = api_key
 
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
@@ -90,39 +90,40 @@ openai.api_key = "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"
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 # Botão para iniciar o chat
 
-if st.sidebar.button("Iniciar análise"):
-    if uploaded_file:
-        # Converter XLSX para PDF
-        pdf_output_path = "converted_file.json"
-        convert_xlsx_to_json(uploaded_file, pdf_output_path)
+if not st.session_state.start_chat:
+    if st.sidebar.button("Iniciar análise"):
+        if uploaded_file:
+            # Converter XLSX para PDF
+            pdf_output_path = "converted_file.json"
+            convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
-        # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(pdf_output_path)
+            # Enviar o arquivo convertido
+            additional_file_id = upload_to_openai(pdf_output_path)
 
-        st.session_state.file_id_list.append(additional_file_id)
-        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+            st.session_state.file_id_list.append(additional_file_id)
+            #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
-    # Mostra os ids
-    if st.session_state.file_id_list:
-        #st.sidebar.write("IDs dos arquivos enviados:")
-        for file_id in st.session_state.file_id_list:
-            #st.sidebar.write(file_id)
-            # Associa os arquivos ao assistente
-            assistant_file = client.beta.assistants.files.create(
-                assistant_id=assistant_id,
-                file_id=file_id
-            )
+        # Mostra os ids
+        if st.session_state.file_id_list:
+            #st.sidebar.write("IDs dos arquivos enviados:")
+            for file_id in st.session_state.file_id_list:
+                #st.sidebar.write(file_id)
+                # Associa os arquivos ao assistente
+                assistant_file = client.beta.assistants.files.create(
+                    assistant_id=assistant_id,
+                    file_id=file_id
+                )
 
 
-    # Verifica se o arquivo foi upado antes de iniciar
-    if st.session_state.file_id_list:
-        st.session_state.start_chat = True
-        # Cria a thread e guarda o id na sessão
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        #st.write("id da thread: ", thread.id)
-    else:
-        st.sidebar.warning("Por favor, clique em \"Iniciar análise\" iniciar o chat")
+        # Verifica se o arquivo foi upado antes de iniciar
+        if st.session_state.file_id_list:
+            st.session_state.start_chat = True
+            # Cria a thread e guarda o id na sessão
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
+            #st.write("id da thread: ", thread.id)
+        else:
+            st.sidebar.warning("Por favor, clique em \"Iniciar análise\" iniciar o chat")
 
 
 if st.session_state.start_chat:
@@ -198,6 +199,7 @@ if st.session_state.start_chat:
                 thread_id=st.session_state.thread_id,
                 role="user",
                 content=prompt,
+                file_ids=st.session_state.file_id_list
             )
 
             # Cria a requisição com mais instruções
