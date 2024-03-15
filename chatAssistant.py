@@ -1,3 +1,5 @@
+import base64
+
 import openai
 import streamlit as st
 from bs4 import BeautifulSoup
@@ -12,6 +14,7 @@ from openpyxl import load_workbook
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from PIL import Image
 import urllib
 import pandas as pd
 
@@ -67,6 +70,14 @@ perguntas = [
 
 pergunta_ = ""
 
+
+def getImage(file_id) :
+    image_file_id = file_id
+    image_file = openai.files.content(image_file_id)
+    bites = BytesIO(base64.b64decode(image_file.content))
+    aux_im = Image.open(BytesIO(image_file.content))
+    return aux_im
+
 def download_file(file) :
     file = urllib.request.urlopen(file).read()
     return BytesIO(file)
@@ -78,9 +89,9 @@ def upload_to_openai(filepath):
     return response.id
 
 #local
-api_key = os.getenv("OPENAI_API_KEY")
+#api_key = os.getenv("OPENAI_API_KEY")
 #git
-#api_key = st.secrets.OpenAIAPI.openai_api_key
+api_key = st.secrets.OpenAIAPI.openai_api_key
 
 if api_key:
     openai.api_key = api_key
@@ -93,18 +104,11 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 
 if not st.session_state.start_chat:
     if st.sidebar.button("Iniciar análise"):
+        #if uploaded_file:
         ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-        for file in ds:
-            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
-        if uploaded_file:
-            # Converter XLSX para PDF
-            pdf_output_path = "converted_file.json"
-            convert_xlsx_to_json(uploaded_file, pdf_output_path)
-
-            # Enviar o arquivo convertido
-            additional_file_id = upload_to_openai(pdf_output_path)
-
-            st.session_state.file_id_list.append(additional_file_id)
+        if ds:
+            for file in ds:
+                st.session_state.file_id_list.append(file.id)
             #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
         # Mostra os ids
@@ -181,7 +185,13 @@ if st.session_state.start_chat:
     # Mostra mensagens anteriores
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+            if message["typeFile"] == "text":
+                st.markdown(message["content"], unsafe_allow_html=True)
+
+            if message["typeFile"] == "image":
+                image = getImage(message["content"])
+                st.image(image)
+
 
     prompt_ =  st.chat_input("Faça uma pergunta!" )
 
@@ -194,7 +204,7 @@ if st.session_state.start_chat:
     # Campo pro usuário escrever
     if prompt:
         # Adiciona as mensagens do usuário e mostra no chat
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append({"role": "user", "content": prompt, "typeFile":"text"})
         with st.chat_message("user"):
             st.markdown(prompt)
 
@@ -224,7 +234,6 @@ if st.session_state.start_chat:
 
 
 
-
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
             thread_id=st.session_state.thread_id
@@ -236,10 +245,24 @@ if st.session_state.start_chat:
             if message.run_id == run.id and message.role == "assistant"
         ]
         for message in assistant_messages_for_run[::-1]:
-            full_response = process_message_with_citations(message)
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
-            with st.chat_message("assistant"):
-                st.markdown(full_response, unsafe_allow_html=True)
+            #print(message)
+            if message.content[0].type == "text":
+                full_response = process_message_with_citations(message)
+                st.session_state.messages.append({"role": "assistant", "content": full_response, "typeFile" :"text"})
+
+                with st.chat_message("assistant"):
+                    st.write(full_response, unsafe_allow_html=True)
+
+            if message.content[0].type == "image_file":
+                image = getImage(message.content[0].image_file.file_id)
+                if image:
+                    st.session_state.messages.append({"role": "assistant", "content": message.content[0].image_file.file_id, "typeFile" : "image"})
+                    with st.chat_message("assistant"):
+                        st.image(getImage(message.content[0].image_file.file_id))
+
+
+
+
 else:
     # Prompt pra iniciar o chat
     st.write("Por favor, selecione o(s) arquivo(s) e clique em *iniciar chat* para gerar respostas")
