@@ -102,6 +102,8 @@ if api_key:
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 # Botão para iniciar o chat
 
+st.sidebar.write('<style>p, ol, ul, dl {font-size:9rem}</style>', unsafe_allow_html=True)
+
 if not st.session_state.start_chat:
     if True:
         #if uploaded_file:
@@ -144,6 +146,7 @@ if st.session_state.start_chat:
             if unidecode(search.lower()) in unidecode(pergunta.lower()):
                 if st.sidebar.button(f"{pergunta}"):
                     pergunta_ = pergunta
+
 
     st.sidebar.write('<style>label[data-baseweb="checkbox"] > div > div {background: #282828}</style>', unsafe_allow_html=True)
 # Define a função para iniciar
