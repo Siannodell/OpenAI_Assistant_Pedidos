@@ -108,7 +108,7 @@ if st.sidebar.button("Iniciar"):
 
     # Mostra os ids
     if st.session_state.file_id_list:
-        st.sidebar.write("IDs dos arquivos enviados:")
+        #st.sidebar.write("IDs dos arquivos enviados:")
         for file_id in st.session_state.file_id_list:
             #st.sidebar.write(file_id)
 
@@ -132,7 +132,7 @@ if st.sidebar.button("Iniciar"):
 
 
 if st.session_state.start_chat:
-    on = st.sidebar.toggle('Ver sugestões de perguntas', active=True)
+    on = st.sidebar.toggle('Ver sugestões de perguntas', value=True)
 
     if on:
         for indice, pergunta in enumerate(perguntas):
