@@ -103,7 +103,7 @@ uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/Botas
 # Botão para iniciar o chat
 
 if not st.session_state.start_chat:
-    if st.sidebar.button("Iniciar análise"):
+    if True:
         #if uploaded_file:
         ds = client.beta.assistants.files.list(assistant_id=assistant_id)
         if ds:
