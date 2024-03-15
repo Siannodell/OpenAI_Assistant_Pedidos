@@ -1,8 +1,6 @@
 import openai
 import streamlit as st
 from bs4 import BeautifulSoup
-from faker.decode import unidecode
-from streamlit.components.v1 import html
 import requests
 import pdfkit
 import time
@@ -13,7 +11,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
 import urllib
-import pandas as pd
+
 
 load_dotenv()
 #id do assistente
@@ -32,14 +30,11 @@ if "start_chat" not in st.session_state:
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = None
 
+def download_file(file) :
+    file = urllib.request.urlopen(file).read()
+    return BytesIO(file)
 # titulo e icone da página
 # Função para converter XLSX pra PDF
-
-def convert_xlsx_to_json(input_path, output_path) :
-    read_file = pd.read_csv(input_path)
-
-    read_file.to_json(output_path)
-
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
     sheets = workbook.sheetnames
@@ -57,19 +52,13 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
-    "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
-    "Qual foi o ticket médio dos pedidos aprovados comparado com os pedidos não aprovados? Isso pode indicar alguma tendência ou comportamento específico dos consumidores?",
-    "Qual é a taxa de aprovação dos pedidos recebidos e como ela se distribui entre as diferentes cidades ou estados?",
-    "A localização impacta o valor médio dos pedidos ou a preferência por formas de pagamento?",
-    "Comparando os dados de agosto de 2023 com meses anteriores, existe alguma tendência de crescimento ou decréscimo nas transações?",
+    "Sugestão de pergunta 1",
+    "Sugestão de pergunta 2",
+    "Sugestão de pergunta 3",
 ]
 
 pergunta_ = ""
 
-def download_file(file) :
-    file = urllib.request.urlopen(file).read()
-    return BytesIO(file)
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
@@ -84,56 +73,54 @@ api_key = st.secrets.OpenAIAPI.openai_api_key
 if api_key:
     openai.api_key = api_key
 
-#st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
+st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
-#uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
-# Botão para iniciar o chat
-if st.sidebar.button("Iniciar análise"):
-    if uploaded_file:
+#uploaded_file = st.sidebar.file_uploader("Envie um arquivo novo", key="file_uploader")
+uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
+pdf_output_path = "converted_file.pdf"
+convert_xlsx_to_pdf(uploaded_file, pdf_output_path)
+
+if st.sidebar.button("Enviar arquivo"):
+    if pdf_output_path:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.json"
-        convert_xlsx_to_json(uploaded_file, pdf_output_path)
-
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(pdf_output_path)
-
+        
         st.session_state.file_id_list.append(additional_file_id)
-        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        
+# Mostra os ids
+if st.session_state.file_id_list:
+    st.sidebar.write("IDs dos arquivos enviados:")
+    for file_id in st.session_state.file_id_list:
+        st.sidebar.write(file_id)
+        # Associa os arquivos ao assistente
+        assistant_file = client.beta.assistants.files.create(
+            assistant_id=assistant_id, 
+            file_id=file_id
+        )
 
-    # Mostra os ids
-    if st.session_state.file_id_list:
-        #st.sidebar.write("IDs dos arquivos enviados:")
-        for file_id in st.session_state.file_id_list:
-            st.sidebar.write(file_id)
-            # Associa os arquivos ao assistente
-            assistant_file = client.beta.assistants.files.create(
-                assistant_id=assistant_id,
-                file_id=file_id
-            )
-
-
+# Botão para iniciar o chat
+if st.sidebar.button("Iniciar chat"):
     # Verifica se o arquivo foi upado antes de iniciar
     if st.session_state.file_id_list:
         st.session_state.start_chat = True
         # Cria a thread e guarda o id na sessão
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
-        #st.write("id da thread: ", thread.id)
+        st.write("id da thread: ", thread.id)
     else:
         st.sidebar.warning("Por favor, selecione pelo menos um arquivo para iniciar o chat")
 
 
 if st.session_state.start_chat:
-    on = st.sidebar.toggle('Ver sugestões de perguntas', value=True)
-    search = st.sidebar.text_input("Pesquisar perguntas sugeridas")
+    on = st.sidebar.toggle('Ver sugestões de perguntas')
 
     if on:
         for indice, pergunta in enumerate(perguntas):
             # st.sidebar.write(f"<a style=\"color:white;display:flex;align-items:center;gap:26px;text-decoration:none\" target=\"_self\" id=\"pergunta{indice}\" href=\"javascript:(function(){{var conteudo = document.getElementById('pergunta{indice}').innerText; navigator.clipboard.writeText(conteudo).then(function() {{ console.log('Conteúdo copiado para a área de transferência: ' + conteudo); }}, function(err) {{ console.error('Erro ao copiar conteúdo: ', err); }});}})()\">{pergunta}<span>{icon_copy}</span></a>", unsafe_allow_html=True)
-            if unidecode(search.lower()) in unidecode(pergunta.lower()):
-                if st.sidebar.button(f"{pergunta}"):
-                    pergunta_ = pergunta
+            if st.sidebar.button(f"{pergunta}"):
+                pergunta_ = pergunta
 
     st.sidebar.write('<style>label[data-baseweb="checkbox"] > div > div {background: #282828}</style>', unsafe_allow_html=True)
 # Define a função para iniciar
@@ -196,8 +183,7 @@ if st.session_state.start_chat:
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt,
-            file_ids=st.session_state.file_id_list
+            content=prompt
         )
 
         # Cria a requisição com mais instruções
@@ -208,7 +194,8 @@ if st.session_state.start_chat:
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
-        while run.status in ['queued', 'in_progress', 'cancelling']:
+        while run.status != 'completed':
+            time.sleep(1)
             run = client.beta.threads.runs.retrieve(
                 thread_id=st.session_state.thread_id,
                 run_id=run.id
@@ -221,10 +208,10 @@ if st.session_state.start_chat:
 
         # Processa e mostra as mensagens do assistente
         assistant_messages_for_run = [
-            message for message in messages
+            message for message in messages 
             if message.run_id == run.id and message.role == "assistant"
         ]
-        for message in assistant_messages_for_run[::-1]:
+        for message in assistant_messages_for_run:
             full_response = process_message_with_citations(message)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             with st.chat_message("assistant"):
