@@ -102,7 +102,7 @@ if api_key:
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 # Botão para iniciar o chat
 
-st.sidebar.write('<style>p, ol, ul, dl {font-size:9rem}</style>', unsafe_allow_html=True)
+st.sidebar.write('<style>p, ol, ul, dl {font-size:0.9rem}</style>', unsafe_allow_html=True)
 
 if not st.session_state.start_chat:
     if True:
