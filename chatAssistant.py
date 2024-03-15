@@ -36,12 +36,8 @@ if "thread_id" not in st.session_state:
 # Função para converter XLSX pra PDF
 
 def convert_xlsx_to_json(input_path, output_path) :
-    # Read and store content
-    # of an excel file
-    read_file = pd.read_excel(input_path)
+    read_file = pd.read_csv(input_path)
 
-    # Write the dataframe object
-    # into csv file
     read_file.to_json(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
@@ -91,7 +87,7 @@ if api_key:
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
+uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar análise"):
     if uploaded_file:
