@@ -58,7 +58,6 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
     pdf.save()
 
-
 perguntas = [
     "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
     "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
