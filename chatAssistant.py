@@ -60,16 +60,12 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Qual foi a cidade com o maior número de itens de pedidos aprovados no mês passado?",
-    "Existe alguma diferença significativa no valor médio dos itens de pedidos recebidos entre os gêneros masculino e feminino?",
-    "Qual é a marca mais vendida em um determinado estado em um ano específico?",
-    "Como a quantidade de itens de pedidos não aprovados varia ao longo dos meses de um determinado ano?",
-    "Qual foi o produto mais pedido em uma determinada faixa etária em um determinado mês?",
-    "Há uma correlação entre o valor dos itens de pedidos recebidos e o valor dos itens de pedidos aprovados?",
-    "Em qual dia da semana houve o maior número de itens de pedidos não aprovados em um determinado trimestre?",
-    "Quais são as três categorias de nível 3 mais populares em uma cidade específica?",
-    "Qual é a faixa etária que mais faz pedidos de produtos de uma determinada categoria de nível 2?",
-    "Como o valor médio dos itens de pedidos aprovados varia ao longo dos anos em um determinado estado?"
+    "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
+    "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
+    "Qual foi o ticket médio dos pedidos aprovados comparado com os pedidos não aprovados? Isso pode indicar alguma tendência ou comportamento específico dos consumidores?",
+    "Qual é a taxa de aprovação dos pedidos recebidos e como ela se distribui entre as diferentes cidades ou estados?",
+    "A localização impacta o valor médio dos pedidos ou a preferência por formas de pagamento?",
+    "Comparando os dados de agosto de 2023 com meses anteriores, existe alguma tendência de crescimento ou decréscimo nas transações?",
 ]
 
 pergunta_ = ""
