@@ -36,7 +36,7 @@ if "thread_id" not in st.session_state:
 # Função para converter XLSX pra PDF
 
 def convert_xlsx_to_json(input_path, output_path) :
-    read_file = pd.read_csv(input_path)
+    read_file = pd.read_excel(input_path)
 
     read_file.to_markdown(output_path)
 
