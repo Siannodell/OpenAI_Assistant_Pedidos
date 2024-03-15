@@ -34,14 +34,14 @@ if "thread_id" not in st.session_state:
 # titulo e icone da página
 # Função para converter XLSX pra PDF
 
-def convert_xlsx_to_markdown(input_path, output_path) :
+def convert_xlsx_to_json(input_path, output_path) :
     # Read and store content
     # of an excel file
-    read_file = pd.read_csv(input_path)
+    read_file = pd.read_excel(input_path)
 
     # Write the dataframe object
     # into csv file
-    read_file.to_csv(output_path)
+    read_file.to_markdown(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -60,25 +60,22 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
 
 perguntas = [
-    "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
-    "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
-    "Qual foi o ticket médio dos pedidos aprovados comparado com os pedidos não aprovados? Isso pode indicar alguma tendência ou comportamento específico dos consumidores?",
-    "Qual é a taxa de aprovação dos pedidos recebidos e como ela se distribui entre as diferentes cidades ou estados?",
-    "A localização impacta o valor médio dos pedidos ou a preferência por formas de pagamento?",
-    "Comparando os dados de agosto de 2023 com meses anteriores, existe alguma tendência de crescimento ou decréscimo nas transações?",
+    "Sugestão de pergunta 1",
+    "Sugestão de pergunta 2",
+    "Sugestão de pergunta 3",
 ]
 
 pergunta_ = ""
 
 def download_file(file) :
-    file = urllib.request.urlopen(file)
-    return file
+    file = urllib.request.urlopen(file).read()
+    return BytesIO(file)
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
     with open(filepath, "rb") as file:
         response = openai.files.create(file=file.read(), purpose="assistants")
-        return response.id
+    return response.id
 
 #local
 #api_key = os.getenv("OPENAI_API_KEY")
@@ -90,23 +87,23 @@ if api_key:
 #st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
 
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
+uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
-    #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-    #for file in ds:
-        #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
-
-    uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
     if uploaded_file:
         # Converter XLSX para PDF
-        pdf_output_path = "converted_file.xls"
-        convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
+        pdf_output_path = "converted_file.md"
+        convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(pdf_output_path)
 
         st.session_state.file_id_list.append(additional_file_id)
         st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+
+    ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    for file in ds:
+        client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
     # Mostra os ids
     if st.session_state.file_id_list:
@@ -173,7 +170,7 @@ st.subheader("ANÁLISE DE PEDIDOS")
 if st.session_state.start_chat:
     # Inicializa o modelo usado
     if "openai_model" not in st.session_state:
-        st.session_state.openai_model = "gpt-4-turbo-preview"
+        st.session_state.openai_model = "gpt-4-1106-preview"
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -201,8 +198,7 @@ if st.session_state.start_chat:
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt,
-            file_ids=st.session_state.file_id_list
+            content=prompt
         )
 
         # Cria a requisição com mais instruções
