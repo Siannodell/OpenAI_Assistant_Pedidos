@@ -218,13 +218,6 @@ if st.session_state.start_chat:
                 run_id=run.id
             )
 
-        while run.status == 'in_progress':
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=st.session_state.thread_id,
-                run_id=run.id
-            )
-
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
             thread_id=st.session_state.thread_id
