@@ -123,7 +123,7 @@ if not st.session_state.start_chat:
             st.session_state.thread_id = thread.id
             #st.write("id da thread: ", thread.id)
         else:
-            st.sidebar.warning("Por favor, selecione pelo menos um arquivo para iniciar o chat")
+            st.sidebar.warning("Por favor, clique em \"Iniciar análise\" iniciar o chat")
 
 
 if st.session_state.start_chat:
