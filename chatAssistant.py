@@ -200,7 +200,8 @@ if st.session_state.start_chat:
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt
+            content=prompt,
+            file_ids=st.session_state.file_id_list
         )
 
         # Cria a requisição com mais instruções
