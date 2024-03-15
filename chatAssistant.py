@@ -92,7 +92,7 @@ if api_key:
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
 
-    if st.session_state.file_id_list:
+    if not st.session_state.file_id_list:
         ds = client.beta.assistants.files.list(assistant_id=assistant_id)
         for file in ds:
             client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
