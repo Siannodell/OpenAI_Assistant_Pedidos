@@ -41,7 +41,7 @@ def convert_xlsx_to_markdown(input_path, output_path) :
 
     # Write the dataframe object
     # into csv file
-    read_file.to_markdown(output_path)
+    read_file.to_csv(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -58,6 +58,7 @@ def convert_xlsx_to_pdf(input_path, output_path):
 
     pdf.save()
 
+
 perguntas = [
     "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
     "Há diferenças significativas nos padrões de compra entre os diferentes gêneros listados no documento?",
@@ -69,17 +70,14 @@ perguntas = [
 
 pergunta_ = ""
 
-def download_csv(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.content
-    else:
-        return None
+def download_file(file) :
+    file = urllib.request.urlopen(file)
+    return file
 
 # Função pra enviar arquivo convertido pra OpenAI
 def upload_to_openai(filepath):
-        response = openai.files.create(file=filepath.read(), purpose="assistants")
-        return response.id
+    response = openai.files.create(file=filepath.read(), purpose="assistants")
+    return response.id
 
 #local
 #api_key = os.getenv("OPENAI_API_KEY")
@@ -93,29 +91,27 @@ if api_key:
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 # Botão para iniciar o chat
 if st.sidebar.button("Iniciar"):
-    if not st.session_state.file_id_list:
-        ds = client.beta.assistants.files.list(assistant_id=assistant_id)
-        for file in ds:
-            client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
+    #ds = client.beta.assistants.files.list(assistant_id=assistant_id)
+    #for file in ds:
+        #client.beta.assistants.files.delete(assistant_id=assistant_id, file_id=file.id)
 
-    uploaded_file = download_csv("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
+    uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
     if uploaded_file:
         # Converter XLSX para PDF
-        #pdf_output_path = "converted_file.xls"
-        #convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
+        pdf_output_path = "converted_file.xls"
+        convert_xlsx_to_markdown(uploaded_file, pdf_output_path)
+
         # Enviar o arquivo convertido
         additional_file_id = upload_to_openai(uploaded_file)
 
         st.session_state.file_id_list.append(additional_file_id)
-        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
     # Mostra os ids
     if st.session_state.file_id_list:
-        #st.sidebar.write("IDs dos arquivos enviados:")
+        st.sidebar.write("IDs dos arquivos enviados:")
         for file_id in st.session_state.file_id_list:
-            #st.sidebar.write(file_id)
-
-
+            st.sidebar.write(file_id)
             # Associa os arquivos ao assistente
             assistant_file = client.beta.assistants.files.create(
                 assistant_id=assistant_id,
@@ -135,7 +131,7 @@ if st.sidebar.button("Iniciar"):
 
 
 if st.session_state.start_chat:
-    on = st.sidebar.toggle('Ver sugestões de perguntas', value=True)
+    on = st.sidebar.toggle('Ver sugestões de perguntas')
 
     if on:
         for indice, pergunta in enumerate(perguntas):
