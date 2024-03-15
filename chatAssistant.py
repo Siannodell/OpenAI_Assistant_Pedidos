@@ -211,10 +211,27 @@ if st.session_state.start_chat:
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
-        run = client.beta.threads.runs.retrieve(
-            thread_id=st.session_state.thread_id,
-            run_id=run.id
-        )
+        while run.status != 'completed':
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=st.session_state.thread_id,
+                run_id=run.id
+            )
+            messages = client.beta.threads.messages.list(
+                thread_id=st.session_state.thread_id
+            )
+
+            # Processa e mostra as mensagens do assistente
+            assistant_messages_for_run = [
+                message for message in messages
+                if message.run_id == run.id and message.role == "assistant"
+            ]
+            for message in assistant_messages_for_run[::-1]:
+                full_response = process_message_with_citations(message)
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+                with st.chat_message("assistant"):
+                    st.markdown(full_response, unsafe_allow_html=True)
+
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
             thread_id=st.session_state.thread_id
