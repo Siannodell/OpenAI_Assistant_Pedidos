@@ -104,13 +104,13 @@ if st.sidebar.button("Iniciar"):
         additional_file_id = upload_to_openai(pdf_output_path)
 
         st.session_state.file_id_list.append(additional_file_id)
-        st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
     # Mostra os ids
     if st.session_state.file_id_list:
         st.sidebar.write("IDs dos arquivos enviados:")
         for file_id in st.session_state.file_id_list:
-            st.sidebar.write(file_id)
+            #st.sidebar.write(file_id)
 
 
             # Associa os arquivos ao assistente
@@ -132,7 +132,7 @@ if st.sidebar.button("Iniciar"):
 
 
 if st.session_state.start_chat:
-    on = st.sidebar.toggle('Ver sugestões de perguntas')
+    on = st.sidebar.toggle('Ver sugestões de perguntas', active="true")
 
     if on:
         for indice, pergunta in enumerate(perguntas):
