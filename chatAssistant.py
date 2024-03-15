@@ -1,6 +1,7 @@
 import openai
 import streamlit as st
 from bs4 import BeautifulSoup
+from faker.decode import unidecode
 from streamlit.components.v1 import html
 import requests
 import pdfkit
@@ -81,9 +82,9 @@ def upload_to_openai(filepath):
     return response.id
 
 #local
-api_key = "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"
+#api_key = os.getenv("OPENAI_API_KEY")
 #git
-#api_key = st.secrets.OpenAIAPI.openai_api_key
+api_key = st.secrets.OpenAIAPI.openai_api_key
 if api_key:
     openai.api_key = api_key
 
@@ -102,11 +103,11 @@ if st.sidebar.button("Iniciar"):
         additional_file_id = upload_to_openai(pdf_output_path)
 
         st.session_state.file_id_list.append(additional_file_id)
-        st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
 
     # Mostra os ids
     if st.session_state.file_id_list:
-        st.sidebar.write("IDs dos arquivos enviados:")
+        #st.sidebar.write("IDs dos arquivos enviados:")
         for file_id in st.session_state.file_id_list:
             st.sidebar.write(file_id)
             # Associa os arquivos ao assistente
@@ -122,19 +123,21 @@ if st.sidebar.button("Iniciar"):
         # Cria a thread e guarda o id na sessão
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
-        st.write("id da thread: ", thread.id)
+        #st.write("id da thread: ", thread.id)
     else:
         st.sidebar.warning("Por favor, selecione pelo menos um arquivo para iniciar o chat")
 
 
 if st.session_state.start_chat:
-    on = st.sidebar.toggle('Ver sugestões de perguntas')
+    on = st.sidebar.toggle('Ver sugestões de perguntas', value=True)
+    search = st.sidebar.text_input("Pesquisar perguntas sugeridas")
 
     if on:
         for indice, pergunta in enumerate(perguntas):
             # st.sidebar.write(f"<a style=\"color:white;display:flex;align-items:center;gap:26px;text-decoration:none\" target=\"_self\" id=\"pergunta{indice}\" href=\"javascript:(function(){{var conteudo = document.getElementById('pergunta{indice}').innerText; navigator.clipboard.writeText(conteudo).then(function() {{ console.log('Conteúdo copiado para a área de transferência: ' + conteudo); }}, function(err) {{ console.error('Erro ao copiar conteúdo: ', err); }});}})()\">{pergunta}<span>{icon_copy}</span></a>", unsafe_allow_html=True)
-            if st.sidebar.button(f"{pergunta}"):
-                pergunta_ = pergunta
+            if unidecode(search.lower()) in unidecode(pergunta.lower()):
+                if st.sidebar.button(f"{pergunta}"):
+                    pergunta_ = pergunta
 
     st.sidebar.write('<style>label[data-baseweb="checkbox"] > div > div {background: #282828}</style>', unsafe_allow_html=True)
 # Define a função para iniciar
@@ -209,8 +212,7 @@ if st.session_state.start_chat:
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
-        while run.status != 'completed':
-            time.sleep(1)
+        while run.status in ['queued', 'in_progress', 'cancelling']:
             run = client.beta.threads.runs.retrieve(
                 thread_id=st.session_state.thread_id,
                 run_id=run.id
