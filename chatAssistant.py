@@ -38,7 +38,7 @@ if "thread_id" not in st.session_state:
 def convert_xlsx_to_json(input_path, output_path) :
     read_file = pd.read_excel(input_path)
 
-    read_file.to_markdown(output_path)
+    read_file.to_json(output_path)
 
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
@@ -78,9 +78,9 @@ def upload_to_openai(filepath):
     return response.id
 
 #local
-#api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 #git
-api_key = st.secrets.OpenAIAPI.openai_api_key
+#api_key = st.secrets.OpenAIAPI.openai_api_key
 
 if api_key:
     openai.api_key = api_key
@@ -200,6 +200,7 @@ if st.session_state.start_chat:
             thread_id=st.session_state.thread_id,
             role="user",
             content=prompt,
+            file_ids=st.session_state.file_id_list
         )
 
         # Cria a requisição com mais instruções
@@ -209,6 +210,7 @@ if st.session_state.start_chat:
             instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor."
         )
 
+
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
         while run.status != 'completed':
             time.sleep(1)
@@ -216,6 +218,9 @@ if st.session_state.start_chat:
                 thread_id=st.session_state.thread_id,
                 run_id=run.id
             )
+
+
+
 
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
