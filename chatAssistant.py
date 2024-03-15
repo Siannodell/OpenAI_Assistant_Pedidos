@@ -81,6 +81,7 @@ def upload_to_openai(filepath):
 #api_key = os.getenv("OPENAI_API_KEY")
 #git
 api_key = st.secrets.OpenAIAPI.openai_api_key
+
 if api_key:
     openai.api_key = api_key
 
@@ -188,50 +189,49 @@ if st.session_state.start_chat:
         prompt = prompt_
 
     # Campo pro usuário escrever
-        if prompt:
-            # Adiciona as mensagens do usuário e mostra no chat
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
+    if prompt:
+        # Adiciona as mensagens do usuário e mostra no chat
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-            # Adiciona as mensagens criadas na thread
-            client.beta.threads.messages.create(
+        # Adiciona as mensagens criadas na thread
+        client.beta.threads.messages.create(
+            thread_id=st.session_state.thread_id,
+            role="user",
+            content=prompt,
+        )
+
+        # Cria a requisição com mais instruções
+        run = client.beta.threads.runs.create(
+            thread_id=st.session_state.thread_id,
+            assistant_id=assistant_id,
+            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor."
+        )
+
+        # Pedido para finalizar a requisição e retornar as mensagens do assistente
+        while run.status != 'completed':
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
                 thread_id=st.session_state.thread_id,
-                role="user",
-                content=prompt,
-                file_ids=st.session_state.file_id_list
+                run_id=run.id
             )
 
-            # Cria a requisição com mais instruções
-            run = client.beta.threads.runs.create(
-                thread_id=st.session_state.thread_id,
-                assistant_id=assistant_id,
-                instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor."
-            )
+        # Retorna as mensagens do assistente
+        messages = client.beta.threads.messages.list(
+            thread_id=st.session_state.thread_id
+        )
 
-            # Pedido para finalizar a requisição e retornar as mensagens do assistente
-            while run.status != 'completed':
-                time.sleep(1)
-                run = client.beta.threads.runs.retrieve(
-                    thread_id=st.session_state.thread_id,
-                    run_id=run.id
-                )
-
-            # Retorna as mensagens do assistente
-            messages = client.beta.threads.messages.list(
-                thread_id=st.session_state.thread_id
-            )
-
-            # Processa e mostra as mensagens do assistente
-            assistant_messages_for_run = [
-                message for message in messages
-                if message.run_id == run.id and message.role == "assistant"
-            ]
-            for message in assistant_messages_for_run:
-                full_response = process_message_with_citations(message)
-                st.session_state.messages.append({"role": "assistant", "content": full_response})
-                with st.chat_message("assistant"):
-                    st.markdown(full_response, unsafe_allow_html=True)
-    else:
-        # Prompt pra iniciar o chat
-        st.write("Por favor, selecione o(s) arquivo(s) e clique em *iniciar chat* para gerar respostas")
+        # Processa e mostra as mensagens do assistente
+        assistant_messages_for_run = [
+            message for message in messages
+            if message.run_id == run.id and message.role == "assistant"
+        ]
+        for message in assistant_messages_for_run:
+            full_response = process_message_with_citations(message)
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            with st.chat_message("assistant"):
+                st.markdown(full_response, unsafe_allow_html=True)
+else:
+    # Prompt pra iniciar o chat
+    st.write("Por favor, selecione o(s) arquivo(s) e clique em *iniciar chat* para gerar respostas")
