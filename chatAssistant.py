@@ -204,19 +204,17 @@ if st.session_state.start_chat:
 
         # Cria a requisição com mais instruções
         run = client.beta.threads.runs.create(
+
             thread_id=st.session_state.thread_id,
             assistant_id=assistant_id,
             instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor."
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
-        while run.status != 'completed':
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=st.session_state.thread_id,
-                run_id=run.id
-            )
-
+        run = client.beta.threads.runs.retrieve(
+            thread_id=st.session_state.thread_id,
+            run_id=run.id
+        )
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
             thread_id=st.session_state.thread_id
