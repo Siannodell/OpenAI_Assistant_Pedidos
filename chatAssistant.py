@@ -198,7 +198,6 @@ if st.session_state.start_chat:
                 thread_id=st.session_state.thread_id,
                 role="user",
                 content=prompt,
-                file_ids=st.session_state.file_id_list
             )
 
             # Cria a requisição com mais instruções
