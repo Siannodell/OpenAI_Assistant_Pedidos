@@ -89,39 +89,41 @@ if api_key:
 #uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
 # Botão para iniciar o chat
-if st.sidebar.button("Iniciar análise"):
-    if uploaded_file:
-        # Converter XLSX para PDF
-        pdf_output_path = "converted_file.json"
-        convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
-        # Enviar o arquivo convertido
-        additional_file_id = upload_to_openai(pdf_output_path)
+if st.session_state.thread_id:
+    if st.sidebar.button("Iniciar análise"):
+        if uploaded_file:
+            # Converter XLSX para PDF
+            pdf_output_path = "converted_file.json"
+            convert_xlsx_to_json(uploaded_file, pdf_output_path)
 
-        st.session_state.file_id_list.append(additional_file_id)
-        #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+            # Enviar o arquivo convertido
+            additional_file_id = upload_to_openai(pdf_output_path)
 
-    # Mostra os ids
-    if st.session_state.file_id_list:
-        #st.sidebar.write("IDs dos arquivos enviados:")
-        for file_id in st.session_state.file_id_list:
-            st.sidebar.write(file_id)
-            # Associa os arquivos ao assistente
-            assistant_file = client.beta.assistants.files.create(
-                assistant_id=assistant_id,
-                file_id=file_id
-            )
+            st.session_state.file_id_list.append(additional_file_id)
+            #st.sidebar.write(f"ID do arquivo: {additional_file_id}")
+
+        # Mostra os ids
+        if st.session_state.file_id_list:
+            #st.sidebar.write("IDs dos arquivos enviados:")
+            for file_id in st.session_state.file_id_list:
+                #st.sidebar.write(file_id)
+                # Associa os arquivos ao assistente
+                assistant_file = client.beta.assistants.files.create(
+                    assistant_id=assistant_id,
+                    file_id=file_id
+                )
 
 
-    # Verifica se o arquivo foi upado antes de iniciar
-    if st.session_state.file_id_list:
-        st.session_state.start_chat = True
-        # Cria a thread e guarda o id na sessão
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        #st.write("id da thread: ", thread.id)
-    else:
-        st.sidebar.warning("Por favor, selecione pelo menos um arquivo para iniciar o chat")
+        # Verifica se o arquivo foi upado antes de iniciar
+        if st.session_state.file_id_list:
+            st.session_state.start_chat = True
+            # Cria a thread e guarda o id na sessão
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
+            #st.write("id da thread: ", thread.id)
+        else:
+            st.sidebar.warning("Por favor, selecione pelo menos um arquivo para iniciar o chat")
 
 
 if st.session_state.start_chat:
