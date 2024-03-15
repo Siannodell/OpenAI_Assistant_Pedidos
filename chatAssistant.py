@@ -90,7 +90,7 @@ if api_key:
 uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.csv")
 # Botão para iniciar o chat
 
-if st.session_state.thread_id:
+if st.session_state.file_id_list:
     if st.sidebar.button("Iniciar análise"):
         if uploaded_file:
             # Converter XLSX para PDF
