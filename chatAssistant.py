@@ -132,7 +132,7 @@ if st.sidebar.button("Iniciar"):
 
 
 if st.session_state.start_chat:
-    on = st.sidebar.toggle('Ver sugestões de perguntas', active="true")
+    on = st.sidebar.toggle('Ver sugestões de perguntas', active=True)
 
     if on:
         for indice, pergunta in enumerate(perguntas):
