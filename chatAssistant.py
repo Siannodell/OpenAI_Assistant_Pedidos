@@ -295,6 +295,7 @@ if st.session_state.start_chat:
             message for message in messages
             if message.run_id == run.id and message.role == "assistant"
         ]
+
         for message in assistant_messages_for_run[::-1]:
             if not verificar_id(st.session_state.messages, message.id):
                 for messageInt in message.content :
