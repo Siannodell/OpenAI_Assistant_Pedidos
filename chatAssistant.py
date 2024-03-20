@@ -93,9 +93,9 @@ def upload_to_openai(filepath):
     return response.id
 
 #local
-#api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 #git
-api_key = st.secrets.OpenAIAPI.openai_api_key
+#api_key = st.secrets.OpenAIAPI.openai_api_key
 #Faça a apresentação do valor aprovado e valor recebido por mes dos ultimos 12 meses e utilize gráficos em visualizações para facilitar a interpretação dos resultados. Forneça insights sobre o que pode ter impactados os 3 meses com menor volume de vendas e o que pode tem impactado os 3 meses com maior volume de vendas. Forneça recomendações para aumentar as vendas aprovadas.
 
 
@@ -244,7 +244,6 @@ if st.session_state.start_chat:
             instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
         )
 
-
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
         while run.status != 'completed':
             messages = client.beta.threads.messages.list(
@@ -282,8 +281,6 @@ if st.session_state.start_chat:
                                     {"role": "assistant", "content": messageInt.image_file.file_id, "typeFile": "image", "id" : message.id})
                                 with st.chat_message("assistant"):
                                     st.image(getImage(messageInt.image_file.file_id))
-
-
 
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
