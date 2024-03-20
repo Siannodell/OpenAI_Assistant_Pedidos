@@ -233,7 +233,7 @@ if st.session_state.start_chat:
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt + " Obs. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), isso é muito importante",
+            content=prompt + " Obs. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), não fale que irá 'analisar o arquivo' e sim a base",
             file_ids=st.session_state.file_id_list,
         )
 
