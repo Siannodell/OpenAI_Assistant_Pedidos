@@ -21,7 +21,24 @@ import pandas as pd
 load_dotenv()
 #id do assistente
 assistant_id = "asst_RyDmETRf7S9E7gPmXje6HKwD"
+def check_streamlit():
+    """
+    Function to check whether python code is run within streamlit
 
+    Returns
+    -------
+    use_streamlit : boolean
+        True if code is run within streamlit, else False
+    """
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+        if not get_script_run_ctx():
+            use_streamlit = False
+        else:
+            use_streamlit = True
+    except ModuleNotFoundError:
+        use_streamlit = False
+    return use_streamlit
 # inicializa cliente openai
 client = openai
 
@@ -207,8 +224,12 @@ if st.session_state.start_chat:
                 image = getImage(message["content"])
                 st.image(image)
 
+    if not check_streamlit():
+        prompt_ =  st.chat_input("Faça uma pergunta!" )
 
-    prompt_ =  st.chat_input("Faça uma pergunta!" )
+
+    if check_streamlit() :
+        st.status("Estamos analisando...")
 
     if pergunta_ :
         prompt = pergunta_
