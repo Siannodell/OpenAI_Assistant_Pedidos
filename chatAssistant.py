@@ -234,14 +234,14 @@ if st.session_state.start_chat:
             thread_id=st.session_state.thread_id,
             role="user",
             content=prompt,
-            file_ids=st.session_state.file_id_list
+            file_ids=st.session_state.file_id_list,
         )
 
         # Cria a requisição com mais instruções
         run = client.beta.threads.runs.create(
             thread_id=st.session_state.thread_id,
             assistant_id=assistant_id,
-            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
+            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado). Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
@@ -281,7 +281,7 @@ if st.session_state.start_chat:
                                     {"role": "assistant", "content": messageInt.image_file.file_id, "typeFile": "image", "id" : message.id})
                                 with st.chat_message("assistant"):
                                     st.image(getImage(messageInt.image_file.file_id))
-
+                        st.spinner(text="In progress...")
         # Retorna as mensagens do assistente
         messages = client.beta.threads.messages.list(
             thread_id=st.session_state.thread_id
