@@ -233,7 +233,7 @@ if st.session_state.start_chat:
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt,
+            content=prompt + " Obs. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), isso é muito importante",
             file_ids=st.session_state.file_id_list,
         )
 
@@ -241,7 +241,7 @@ if st.session_state.start_chat:
         run = client.beta.threads.runs.create(
             thread_id=st.session_state.thread_id,
             assistant_id=assistant_id,
-            additional_instructions="oda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), isso é muito importante",
+            additional_instructions="Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), isso é muito importante",
             instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
         )
 
