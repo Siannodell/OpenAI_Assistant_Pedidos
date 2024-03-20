@@ -290,22 +290,22 @@ if st.session_state.start_chat:
             if message.run_id == run.id and message.role == "assistant"
         ]
         for message in assistant_messages_for_run[::-1]:
+            if not verificar_id(st.session_state.messages, message.id):
+                for messageInt in message.content :
+                    #print(message)
+                    if messageInt.type == "text":
+                        full_response = process_message_with_citations(messageInt)
+                        st.session_state.messages.append({"role": "assistant", "content": full_response, "typeFile" :"text", "id" : message.id})
 
-            for messageInt in message.content :
-                #print(message)
-                if messageInt.type == "text":
-                    full_response = process_message_with_citations(messageInt)
-                    st.session_state.messages.append({"role": "assistant", "content": full_response, "typeFile" :"text", "id" : message.id})
-
-                    with st.chat_message("assistant"):
-                        st.markdown(full_response, unsafe_allow_html=True)
-
-                if messageInt.type == "image_file":
-                    image = getImage(messageInt.image_file.file_id)
-                    if image:
-                        st.session_state.messages.append({"role": "assistant", "content": messageInt.image_file.file_id, "typeFile" : "image", "id" : message.id})
                         with st.chat_message("assistant"):
-                            st.image(getImage(messageInt.image_file.file_id))
+                            st.markdown(full_response, unsafe_allow_html=True)
+
+                    if messageInt.type == "image_file":
+                        image = getImage(messageInt.image_file.file_id)
+                        if image:
+                            st.session_state.messages.append({"role": "assistant", "content": messageInt.image_file.file_id, "typeFile" : "image", "id" : message.id})
+                            with st.chat_message("assistant"):
+                                st.image(getImage(messageInt.image_file.file_id))
 
 
 
