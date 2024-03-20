@@ -92,6 +92,8 @@ def upload_to_openai(filepath):
 #api_key = os.getenv("OPENAI_API_KEY")
 #git
 api_key = st.secrets.OpenAIAPI.openai_api_key
+#Faça a apresentação do valor aprovado e valor recebido por mes dos ultimos 12 meses e utilize gráficos em visualizações para facilitar a interpretação dos resultados. Forneça insights sobre o que pode ter impactados os 3 meses com menor volume de vendas e o que pode tem impactado os 3 meses com maior volume de vendas. Forneça recomendações para aumentar as vendas aprovadas.
+
 
 if api_key:
     openai.api_key = api_key
@@ -150,9 +152,19 @@ if st.session_state.start_chat:
 
     st.sidebar.write('<style>label[data-baseweb="checkbox"] > div > div {background: #282828}</style>', unsafe_allow_html=True)
 # Define a função para iniciar
+
+def verificar_id(array, id_procurado):
+    # Itera sobre os elementos do array
+    for item in array:
+        # Verifica se o ID do item atual é igual ao ID procurado
+        if item['id'] == id_procurado:
+            return True  # Se encontrado, retorna True
+    return False  # Se não encontrado, retorna False
+
+
 def process_message_with_citations(message):
     """Extract content and annotations from the message and format citations as footnotes."""
-    message_content = message.content[0].text
+    message_content = message.text
     annotations = message_content.annotations if hasattr(message_content, 'annotations') else []
     citations = []
 
@@ -207,7 +219,7 @@ if st.session_state.start_chat:
     # Campo pro usuário escrever
     if prompt:
         # Adiciona as mensagens do usuário e mostra no chat
-        st.session_state.messages.append({"role": "user", "content": prompt, "typeFile":"text"})
+        st.session_state.messages.append({"role": "user", "content": prompt, "typeFile":"text", "id" : ""})
         with st.chat_message("user"):
             st.markdown(prompt, unsafe_allow_html=True)
 
@@ -223,17 +235,47 @@ if st.session_state.start_chat:
         run = client.beta.threads.runs.create(
             thread_id=st.session_state.thread_id,
             assistant_id=assistant_id,
-            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor."
+            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
         )
 
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
         while run.status != 'completed':
+            messages = client.beta.threads.messages.list(
+                thread_id=st.session_state.thread_id
+            )
             time.sleep(1)
             run = client.beta.threads.runs.retrieve(
                 thread_id=st.session_state.thread_id,
                 run_id=run.id
             )
+            # Processa e mostra as mensagens do assistente
+            assistant_messages_for_run = [
+                message for message in messages
+                if message.run_id == run.id and message.role == "assistant" and len(message.content) > 0
+            ]
+
+            print(assistant_messages_for_run)
+
+            for message in assistant_messages_for_run[::-1]:
+                if not verificar_id(st.session_state.messages, message.id):
+                    for messageInt in message.content:
+                        # print(message)
+                        if messageInt.type == "text":
+                            full_response = process_message_with_citations(messageInt)
+                            st.session_state.messages.append(
+                                {"role": "assistant", "content": full_response, "typeFile": "text", "id" : message.id})
+
+                            with st.chat_message("assistant"):
+                                st.markdown(full_response, unsafe_allow_html=True)
+
+                        if messageInt.type == "image_file":
+                            image = getImage(messageInt.image_file.file_id)
+                            if image:
+                                st.session_state.messages.append(
+                                    {"role": "assistant", "content": messageInt.image_file.file_id, "typeFile": "image", "id" : message.id})
+                                with st.chat_message("assistant"):
+                                    st.image(getImage(messageInt.image_file.file_id))
 
 
 
@@ -248,20 +290,22 @@ if st.session_state.start_chat:
             if message.run_id == run.id and message.role == "assistant"
         ]
         for message in assistant_messages_for_run[::-1]:
-            #print(message)
-            if message.content[0].type == "text":
-                full_response = process_message_with_citations(message)
-                st.session_state.messages.append({"role": "assistant", "content": full_response, "typeFile" :"text"})
 
-                with st.chat_message("assistant"):
-                    st.markdown(full_response, unsafe_allow_html=True)
+            for messageInt in message.content :
+                #print(message)
+                if messageInt.type == "text":
+                    full_response = process_message_with_citations(messageInt)
+                    st.session_state.messages.append({"role": "assistant", "content": full_response, "typeFile" :"text", "id" : message.id})
 
-            if message.content[0].type == "image_file":
-                image = getImage(message.content[0].image_file.file_id)
-                if image:
-                    st.session_state.messages.append({"role": "assistant", "content": message.content[0].image_file.file_id, "typeFile" : "image"})
                     with st.chat_message("assistant"):
-                        st.image(getImage(message.content[0].image_file.file_id))
+                        st.markdown(full_response, unsafe_allow_html=True)
+
+                if messageInt.type == "image_file":
+                    image = getImage(messageInt.image_file.file_id)
+                    if image:
+                        st.session_state.messages.append({"role": "assistant", "content": messageInt.image_file.file_id, "typeFile" : "image", "id" : message.id})
+                        with st.chat_message("assistant"):
+                            st.image(getImage(messageInt.image_file.file_id))
 
 
 
