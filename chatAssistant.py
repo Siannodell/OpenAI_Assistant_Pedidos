@@ -192,7 +192,7 @@ def process_message_with_citations(message):
 # Interface do chat
 st.subheader("ANÁLISE DE PEDIDOS")
 #st.write("Este chat usa a API da OpenAI para gerar respostas.")
-
+is_running = False
 # Só vai mostrar o chat se for iniciado
 if st.session_state.start_chat:
     # Inicializa o modelo usado
@@ -211,13 +211,9 @@ if st.session_state.start_chat:
                 image = getImage(message["content"])
                 st.image(image)
 
-
-
-    prompt_ =  st.chat_input("Faça uma pergunta!", disabled = check_streamlit())
-
-    if check_streamlit() :
+    prompt_ =  st.chat_input("Faça uma pergunta!", disabled = is_running)
+    if is_running :
         st.status("Estamos analisando...")
-
 
     if pergunta_ :
         prompt = pergunta_
@@ -227,6 +223,7 @@ if st.session_state.start_chat:
 
     # Campo pro usuário escrever
     if prompt:
+        is_running = True
         # Adiciona as mensagens do usuário e mostra no chat
         st.session_state.messages.append({"role": "user", "content": prompt, "typeFile":"text", "id" : ""})
         with st.chat_message("user"):
@@ -316,7 +313,7 @@ if st.session_state.start_chat:
                             with st.chat_message("assistant"):
                                 st.image(getImage(messageInt.image_file.file_id))
 
-
+        is_running = False
 
 
 else:
