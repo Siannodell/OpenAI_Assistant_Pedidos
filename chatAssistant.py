@@ -241,7 +241,8 @@ if st.session_state.start_chat:
         run = client.beta.threads.runs.create(
             thread_id=st.session_state.thread_id,
             assistant_id=assistant_id,
-            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado). Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
+            additional_instructions="oda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), isso é muito importante",
+            instructions="Por favor, responda as perguntas usando o conteúdo do arquivo. Quando adicionar informações externas, seja claro e mostre essas informações em outra cor. Toda vez que for se referir ao arquivo, não fale arquivo e sim conteúdo dos dados"
         )
 
         # Pedido para finalizar a requisição e retornar as mensagens do assistente
