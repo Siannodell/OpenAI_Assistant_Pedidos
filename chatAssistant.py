@@ -224,12 +224,13 @@ if st.session_state.start_chat:
                 image = getImage(message["content"])
                 st.image(image)
 
-    if not check_streamlit():
-        prompt_ =  st.chat_input("Faça uma pergunta!" )
-
-
     if check_streamlit() :
         st.status("Estamos analisando...")
+
+    prompt_ =  st.chat_input("Faça uma pergunta!", disabled = check_streamlit())
+
+
+
 
     if pergunta_ :
         prompt = pergunta_
