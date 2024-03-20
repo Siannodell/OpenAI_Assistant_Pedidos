@@ -211,9 +211,7 @@ if st.session_state.start_chat:
                 image = getImage(message["content"])
                 st.image(image)
 
-    prompt_ =  st.chat_input("Faça uma pergunta!", disabled = is_running)
-    if is_running :
-        st.status("Estamos analisando...")
+
 
     if pergunta_ :
         prompt = pergunta_
@@ -319,3 +317,8 @@ if st.session_state.start_chat:
 else:
     # Prompt pra iniciar o chat
     st.write("Por favor, selecione o(s) arquivo(s) e clique em *iniciar chat* para gerar respostas")
+
+
+prompt_ =  st.chat_input("Faça uma pergunta!", disabled = is_running)
+if is_running :
+    st.status("Estamos analisando...")
