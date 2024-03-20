@@ -17,28 +17,15 @@ from io import BytesIO
 from PIL import Image
 import urllib
 import pandas as pd
+import threading
 
 load_dotenv()
 #id do assistente
 assistant_id = "asst_RyDmETRf7S9E7gPmXje6HKwD"
 def check_streamlit():
-    """
-    Function to check whether python code is run within streamlit
+    thread = threading.current_thread()
+    return type(thread).__module__.startswith('streamlit.')
 
-    Returns
-    -------
-    use_streamlit : boolean
-        True if code is run within streamlit, else False
-    """
-    try:
-        from streamlit.runtime.scriptrunner import get_script_run_ctx
-        if not get_script_run_ctx():
-            use_streamlit = False
-        else:
-            use_streamlit = True
-    except ModuleNotFoundError:
-        use_streamlit = False
-    return use_streamlit
 # inicializa cliente openai
 client = openai
 
@@ -224,12 +211,12 @@ if st.session_state.start_chat:
                 image = getImage(message["content"])
                 st.image(image)
 
-    if check_streamlit() :
-        st.status("Estamos analisando...")
+
 
     prompt_ =  st.chat_input("Faça uma pergunta!", disabled = check_streamlit())
 
-
+    if check_streamlit() :
+        st.status("Estamos analisando...")
 
 
     if pergunta_ :
