@@ -37,9 +37,9 @@ perguntas = [
 pergunta_ = ""
 
 #local
-api_key = os.getenv("OPENAI_API_KEY")
+#api_key = os.getenv("OPENAI_API_KEY")
 #git
-#api_key = st.secrets.OpenAIAPI.openai_api_key
+api_key = st.secrets.OpenAIAPI.openai_api_key
 #Faça a apresentação do valor aprovado e valor recebido por mes dos ultimos 12 meses e utilize gráficos em visualizações para facilitar a interpretação dos resultados. Forneça insights sobre o que pode ter impactados os 3 meses com menor volume de vendas e o que pode tem impactado os 3 meses com maior volume de vendas. Forneça recomendações para aumentar as vendas aprovadas.
 
 
