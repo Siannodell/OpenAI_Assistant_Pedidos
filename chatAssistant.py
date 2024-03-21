@@ -2,12 +2,7 @@ import base64
 
 import openai
 import streamlit as st
-from bs4 import BeautifulSoup
 from faker.decode import unidecode
-from streamlit.components.v1 import html
-import requests
-import pdfkit
-import time
 import os
 from dotenv import load_dotenv
 from openpyxl import load_workbook
@@ -43,12 +38,10 @@ if "thread_id" not in st.session_state:
 
 # titulo e icone da página
 # Função para converter XLSX pra PDF
-
 def convert_xlsx_to_json(input_path, output_path) :
     read_file = pd.read_excel(input_path)
 
     read_file.to_json(output_path)
-
 def convert_xlsx_to_pdf(input_path, output_path):
     workbook = load_workbook(input_path)
     sheets = workbook.sheetnames
@@ -76,9 +69,6 @@ perguntas = [
 
 pergunta_ = ""
 
-
-
-
 def download_file(file) :
     file = urllib.request.urlopen(file).read()
     return BytesIO(file)
@@ -98,12 +88,6 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 if api_key:
     openai.api_key = api_key
-
-#st.sidebar.write("<a style='color:white'  href='https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx' id='baixarArquivo'>[Baixe o arquivo para fazer a análise]</a>", unsafe_allow_html=True)
-
-#uploaded_file = st.sidebar.file_uploader("Envie um arquivo", key="file_uploader")
-uploaded_file = download_file("https://tecnologia2.chleba.net/_ftp/chatgpt/BotasVentoPedidos.xlsx")
-# Botão para iniciar o chat
 
 st.sidebar.write('<style>p, ol, ul, dl {font-size:0.9rem}</style>', unsafe_allow_html=True)
 
@@ -138,7 +122,6 @@ if not st.session_state.start_chat:
         else:
             st.sidebar.warning("Por favor, clique em \"Iniciar análise\" iniciar o chat")
 
-
 if st.session_state.start_chat:
     on = st.sidebar.toggle('Ver sugestões de perguntas', value=True)
     search = st.sidebar.text_input("Pesquisar perguntas sugeridas")
@@ -152,8 +135,6 @@ if st.session_state.start_chat:
 
 
     st.sidebar.write('<style>label[data-baseweb="checkbox"] > div > div {background: #282828}</style>', unsafe_allow_html=True)
-# Define a função para iniciar
-
 
 # Interface do chat
 st.subheader("ANÁLISE DE PEDIDOS")
@@ -161,7 +142,7 @@ st.subheader("ANÁLISE DE PEDIDOS")
 st.session_state.is_running = False
 # Só vai mostrar o chat se for iniciado
 if st.session_state.start_chat:
-    chat_openai(pergunta_, client, assistant_id)
+    chat_openai(pergunta_, client, assistant_id, "Obs. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), não fale que irá 'analisar o arquivo' e sim a base")
 
 else:
     # Prompt pra iniciar o chat

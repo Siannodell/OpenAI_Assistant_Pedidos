@@ -40,7 +40,7 @@ def getImage(file_id) :
     bites = BytesIO(base64.b64decode(image_file.content))
     aux_im = Image.open(BytesIO(image_file.content))
     return aux_im
-def chat_openai(pergunta_,client, assistant_id):
+def chat_openai(pergunta_,client, assistant_id, instructions):
     if "openai_model" not in st.session_state:
         st.session_state.openai_model = "gpt-4-turbo-preview"
     if "messages" not in st.session_state:
@@ -78,7 +78,7 @@ def chat_openai(pergunta_,client, assistant_id):
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt + " Obs. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), não fale que irá 'analisar o arquivo' e sim a base",
+            content=prompt + instructions,
             file_ids=st.session_state.file_id_list,
         )
 
