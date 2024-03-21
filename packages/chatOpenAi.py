@@ -1,23 +1,9 @@
 import base64
-
 import openai
 import streamlit as st
-from bs4 import BeautifulSoup
-from faker.decode import unidecode
-from streamlit.components.v1 import html
-import requests
-import pdfkit
 import time
-import os
-from dotenv import load_dotenv
-from openpyxl import load_workbook
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from io import BytesIO
 from PIL import Image
-import urllib
-import pandas as pd
-import threading
 
 def verificar_id(array, id_procurado):
     # Itera sobre os elementos do array
@@ -26,8 +12,6 @@ def verificar_id(array, id_procurado):
         if item['id'] == id_procurado:
             return True  # Se encontrado, retorna True
     return False  # Se não encontrado, retorna False
-
-
 def process_message_with_citations(message):
     """Extract content and annotations from the message and format citations as footnotes."""
     message_content = message.text
@@ -50,15 +34,12 @@ def process_message_with_citations(message):
     # Adiciona notas no final da mensgaem (talvez tirar)
     full_response = message_content.value
     return full_response
-
-
 def getImage(file_id) :
     image_file_id = file_id
     image_file = openai.files.content(image_file_id)
     bites = BytesIO(base64.b64decode(image_file.content))
     aux_im = Image.open(BytesIO(image_file.content))
     return aux_im
-
 def chat_openai(pergunta_,client, assistant_id):
     if "openai_model" not in st.session_state:
         st.session_state.openai_model = "gpt-4-turbo-preview"
