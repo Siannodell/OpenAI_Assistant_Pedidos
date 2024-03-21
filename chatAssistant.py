@@ -1,28 +1,14 @@
-import base64
-
 import openai
 import streamlit as st
 from faker.decode import unidecode
 import os
 from dotenv import load_dotenv
-from openpyxl import load_workbook
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from io import BytesIO
-from PIL import Image
-import urllib
-import pandas as pd
-import threading
 
 from packages.chatOpenAi import chat_openai
 
 load_dotenv()
 #id do assistente
 assistant_id = "asst_RyDmETRf7S9E7gPmXje6HKwD"
-def check_streamlit():
-    thread = threading.current_thread()
-    return type(thread).__module__.startswith('streamlit.')
-
 # inicializa cliente openai
 client = openai
 
@@ -38,25 +24,6 @@ if "thread_id" not in st.session_state:
 
 # titulo e icone da página
 # Função para converter XLSX pra PDF
-def convert_xlsx_to_json(input_path, output_path) :
-    read_file = pd.read_excel(input_path)
-
-    read_file.to_json(output_path)
-def convert_xlsx_to_pdf(input_path, output_path):
-    workbook = load_workbook(input_path)
-    sheets = workbook.sheetnames
-
-    pdf = canvas.Canvas(output_path, pagesize=letter)
-
-    for sheet_name in sheets:
-        sheet = workbook[sheet_name]
-
-        for row in sheet.iter_rows():
-            for cell in row:
-                pdf.drawString(cell.column * 50, letter[1] - cell.row * 10, str(cell.value))
-
-    pdf.save()
-
 
 perguntas = [
     "Qual faixa etária apresentou o maior volume de pedidos e qual foi o valor médio destes pedidos?",
@@ -68,16 +35,6 @@ perguntas = [
 ]
 
 pergunta_ = ""
-
-def download_file(file) :
-    file = urllib.request.urlopen(file).read()
-    return BytesIO(file)
-
-# Função pra enviar arquivo convertido pra OpenAI
-def upload_to_openai(filepath):
-    with open(filepath, "rb") as file:
-        response = openai.files.create(file=file.read(), purpose="assistants")
-    return response.id
 
 #local
 api_key = os.getenv("OPENAI_API_KEY")
@@ -138,8 +95,10 @@ if st.session_state.start_chat:
 
 # Interface do chat
 st.subheader("ANÁLISE DE PEDIDOS")
+
 #st.write("Este chat usa a API da OpenAI para gerar respostas.")
 st.session_state.is_running = False
+
 # Só vai mostrar o chat se for iniciado
 if st.session_state.start_chat:
     chat_openai(pergunta_, client, assistant_id, "Obs. Toda vez que você se referir ao arquivo, fale que é a base de dados (o cliente não precisa saber que o arquivo foi enviado), não fale que irá 'analisar o arquivo' e sim a base")
